@@ -1,0 +1,106 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+configurations {
+    aspectj
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.testng/testng
+    implementation group: 'org.testng', name: 'testng', version: '7.8.0'
+
+	// https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.10.0'
+
+
+	// https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-support
+	implementation group: 'org.seleniumhq.selenium', name: 'selenium-support', version: '4.10.0'
+
+	// https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager
+	implementation group: 'io.github.bonigarcia', name: 'webdrivermanager', version: '5.5.0'
+
+	// https://mvnrepository.com/artifact/org.uncommons/reportng
+	testImplementation group: 'org.uncommons', name: 'reportng', version: '1.1.4'
+
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.4'
+
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.4'
+
+	// https://mvnrepository.com/artifact/com.aventstack/extentreports
+	implementation group: 'com.aventstack', name: 'extentreports', version: '5.0.8'
+
+	// https://mvnrepository.com/artifact/log4j/log4j
+	implementation group: 'log4j', name: 'log4j', version: '1.2.16'
+
+	// https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+	implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.24'
+
+	// https://mvnrepository.com/artifact/velocity/velocity-dep
+	implementation group: 'velocity', name: 'velocity-dep', version: '1.4'
+
+	// https://mvnrepository.com/artifact/com.google.inject/guice
+	implementation group: 'com.google.inject', name: 'guice', version: '4.1.0'
+
+	// https://mvnrepository.com/artifact/commons-logging/commons-logging
+	implementation group: 'commons-logging', name: 'commons-logging', version: '1.2'
+
+	// https://mvnrepository.com/artifact/com.github.javafaker/javafaker
+	implementation group: 'com.github.javafaker', name: 'javafaker', version: '1.0.2'
+
+	// https://mvnrepository.com/artifact/io.qameta.allure/allure-testng
+	implementation group: 'io.qameta.allure', name: 'allure-testng', version: '2.13.5'
+
+    // https://mvnrepository.com/artifact/joda-time/joda-time
+    implementation group: 'joda-time', name: 'joda-time', version: '2.0'
+
+    // https://mvnrepository.com/artifact/org.aspectj/aspectjweaver
+    runtimeOnly group: 'org.aspectj', name: 'aspectjweaver', version: '1.9.8'
+    aspectj group: 'org.aspectj', name: 'aspectjweaver', version: '1.9.8'
+
+}
+
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+test {
+    doFirst {
+        jvmArgs "-javaagent:" + configurations.aspectj.asPath
+    }
+    useTestNG(){
+        suites 'src/test/resources/runWordpressAdmin.xml'
+        outputDirectory = file("$projectDir/report-output")
+    }
+    testLogging {
+        showStandardStreams = true
+    }
+
+    systemProperty "file.encoding", "utf-8"
+    reports.html.setDestination(file("$projectDir/gradle-output"))
+}
+
+task smokeTests(type: Test) {
+    doFirst {
+            jvmArgs "-javaagent:" + configurations.aspectj.asPath
+    }
+   useTestNG() {
+       suites 'src/test/resources/runjQuery.xml'
+       outputDirectory = file("$projectDir/smoke-output")
+   }
+   testLogging {
+           showStandardStreams = true
+   }
+   systemProperty "file.encoding", "utf-8"
+}
